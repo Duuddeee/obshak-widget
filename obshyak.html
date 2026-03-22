@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Общак ОИСП | Discord сообщество</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            background: linear-gradient(135deg, #0a0a0f, #0f0c1a, #1a1528, #0f0c1a);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(114, 137, 218, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 80%, rgba(155, 89, 182, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .widget {
+            max-width: 440px;
+            width: 100%;
+            background: rgba(15, 14, 23, 0.75);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(114, 137, 218, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: floatIn 0.5s ease-out;
+        }
+
+        .widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(114, 137, 218, 0.4);
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(35, 39, 42, 0.9), rgba(28, 31, 38, 0.9));
+            padding: 24px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(114, 137, 218, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(114, 137, 218, 0.1), transparent);
+            animation: shimmer 8s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translate(-30%, -30%) rotate(0deg); }
+            100% { transform: translate(30%, 30%) rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #7289da, #9b59b6);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGradient 3s ease infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes textGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header p {
+            color: #b9bbbe;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Кнопка присоединения */
+        .join-section {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(114, 137, 218, 0.1), rgba(155, 89, 182, 0.05));
+            border-bottom: 1px solid rgba(114, 137, 218, 0.2);
+        }
+
+        .join-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #5865F2, #4752c4);
+            border: none;
+            border-radius: 60px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+        }
+
+        .join-button:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #5c6af5, #4e5ad4);
+            box-shadow: 0 6px 18px rgba(88, 101, 242, 0.4);
+        }
+
+        .join-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Статистика онлайн */
+        .online-stats {
+            background: linear-gradient(135deg, rgba(67, 181, 129, 0.1), rgba(67, 181, 129, 0.05));
+            padding: 14px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(67, 181, 129, 0.2);
+        }
+
+        .online-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 20px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+        }
+
+        .online-dot {
+            width: 12px;
+            height: 12px;
+            background: #43b581;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #43b581;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .online-number {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #43b581;
+            text-shadow: 0 0 10px rgba(67, 181, 129, 0.5);
+        }
+
+        .online-label {
+            font-size: 0.85rem;
+            color: #b9bbbe;
+        }
+
+        .section {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #b9bbbe;
+            margin-bottom: 12px;
+        }
+
+        .voice-channel {
+            margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 8px 12px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .voice-channel:hover {
+            background: rgba(114, 137, 218, 0.1);
+            border-color: rgba(114, 137, 218, 0.3);
+        }
+
+        .channel-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .voice-members {
+            padding-left: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .voice-member {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #b9bbbe;
+            padding: 4px 0;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .voice-member:hover {
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .member-avatar-small {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4e5d94, #2c2f33);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .member-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .status-dot-small {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .online-members-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .online-members-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .online-members-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .online-members-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #7289da, #9b59b6);
+            border-radius: 10px;
+        }
+
+        .online-member {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .online-member:hover {
+            background: rgba(114, 137, 218, 0.15);
+            border-color: rgba(114, 137, 218, 0.3);
+            transform: translateX(4px);
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4e5d94, #2c2f33);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .member-status {
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #b9bbbe;
+            margin-top: 2px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-online { background: #43b581; box-shadow: 0 0 4px #43b581; }
+        .status-idle { background: #faa61a; box-shadow: 0 0 4px #faa61a; }
+        .status-dnd { background: #f04747; box-shadow: 0 0 4px #f04747; }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #6c6f78;
+            font-size: 0.85rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e1b2b, #15121f);
+            border-radius: 32px;
+            max-width: 320px;
+            width: 90%;
+            padding: 28px;
+            text-align: center;
+            border: 1px solid rgba(114, 137, 218, 0.5);
+            animation: modalPop 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #4e5d94, #2c2f33);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 3px solid #7289da;
+        }
+
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .modal-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+
+        .close-modal {
+            background: linear-gradient(135deg, #7289da, #5b6eae);
+            border: none;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .close-modal:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(114, 137, 218, 0.4);
+        }
+
+        footer {
+            text-align: center;
+            padding: 14px;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .developer {
+            color: #4a4d55;
+            margin-top: 6px;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+        }
+
+        .developer a {
+            color: #6c6f78;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .developer a:hover {
+            color: #7289da;
+        }
+    </style>
+</head>
+<body>
+<div class="widget">
+    <div class="header">
+        <h1>🔥 Общак ОИСП</h1>
+        <p>Discord сообщество</p>
+    </div>
+
+    <!-- Кнопка присоединения -->
+    <div class="join-section">
+        <a href="https://discord.gg/invite/ОБЩАК_ОИСП" id="joinLink" class="join-button" target="_blank">
+            <span>🎮</span>
+            <span>Присоединиться к серверу</span>
+            <span>✨</span>
+        </a>
+    </div>
+
+    <div class="online-stats" id="onlineStats">
+        <div class="online-count">
+            <div class="online-dot"></div>
+            <span class="online-number" id="onlineCount">—</span>
+            <span class="online-label">участников в сети</span>
+        </div>
+    </div>
+
+    <div class="section" id="voiceSection" style="display: none;">
+        <div class="section-title">
+            <span>🎤</span>
+            <span>ГОЛОСОВЫЕ КАНАЛЫ</span>
+        </div>
+        <div id="voiceChannelsList"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span>🟢</span>
+            <span>ОНЛАЙН УЧАСТНИКИ</span>
+        </div>
+        <div id="onlineMembersList" class="online-members-list">
+            <div class="empty-state">🔄 Загрузка...</div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="developer">Разработчик сайта: Dude. | Мироша</div>
+    </footer>
+</div>
+
+<div id="memberModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-avatar" id="modalAvatar"></div>
+        <div class="modal-name" id="modalName"></div>
+        <div class="modal-status" id="modalStatus"></div>
+        <button class="close-modal" id="closeModalBtn">Закрыть</button>
+    </div>
+</div>
+
+<script>
+    const GUILD_ID = '1105196381414625301';
+    const API_URL = `https://discord.com/api/guilds/${GUILD_ID}/widget.json`;
+    
+    // Постоянная ссылка-приглашение (замените на вашу)
+    // Получить можно: на сервере → пригласить людей → создать ссылку навсегда
+    const INVITE_LINK = 'https://discord.gg/ваша_ссылка_приглашения';
+
+    async function fetchWidgetData() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            return null;
+        }
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'online': return 'status-online';
+            case 'idle': return 'status-idle';
+            case 'dnd': return 'status-dnd';
+            default: return '';
+        }
+    }
+
+    function getStatusText(status) {
+        switch(status) {
+            case 'online': return '🟢 В сети';
+            case 'idle': return '🌙 Не активен';
+            case 'dnd': return '🔴 Не беспокоить';
+            default: return '⚫ Не в сети';
+        }
+    }
+
+    function getAvatarUrl(member) {
+        if (member.avatar_url) return member.avatar_url;
+        return null;
+    }
+
+    function renderVoiceChannels(data) {
+        const voiceSection = document.getElementById('voiceSection');
+        const voiceContainer = document.getElementById('voiceChannelsList');
+        
+        if (!data || !data.channels || data.channels.length === 0) {
+            voiceSection.style.display = 'none';
+            return;
+        }
+        
+        const voiceChannels = data.channels.filter(ch => ch.type === 2);
+        const voiceMembers = data.members || [];
+        
+        if (voiceChannels.length === 0) {
+            voiceSection.style.display = 'none';
+            return;
+        }
+        
+        voiceSection.style.display = 'block';
+        voiceContainer.innerHTML = '';
+        
+        voiceChannels.forEach(channel => {
+            const membersInChannel = voiceMembers.filter(m => m.channel_id === channel.id);
+            
+            const channelDiv = document.createElement('div');
+            channelDiv.className = 'voice-channel';
+            channelDiv.innerHTML = `
+                <div class="channel-name">
+                    <span>🔊</span>
+                    <span>${escapeHtml(channel.name)}</span>
+                    <span style="font-size: 0.7rem; color: #43b581; margin-left: auto;">${membersInChannel.length}</span>
+                </div>
+                <div class="voice-members" id="voiceMembers-${channel.id}"></div>
+            `;
+            
+            const membersContainer = channelDiv.querySelector(`#voiceMembers-${channel.id}`);
+            
+            if (membersInChannel.length === 0) {
+                membersContainer.innerHTML = '<div style="font-size: 0.7rem; color: #6c6f78; padding: 4px 0;">— пусто —</div>';
+            } else {
+                membersInChannel.forEach(member => {
+                    const memberDiv = document.createElement('div');
+                    memberDiv.className = 'voice-member';
+                    
+                    const avatarUrl = getAvatarUrl(member);
+                    const firstLetter = (member.username || '?').charAt(0).toUpperCase();
+                    
+                    memberDiv.innerHTML = `
+                        <div class="member-avatar-small">
+                            ${avatarUrl ? `<img src="${avatarUrl}" alt="">` : firstLetter}
+                        </div>
+                        <span>${escapeHtml(member.username)}</span>
+                        <span class="status-dot-small ${getStatusClass(member.status)}"></span>
+                    `;
+                    
+                    memberDiv.addEventListener('click', () => showModal(member));
+                    membersContainer.appendChild(memberDiv);
+                });
+            }
+            
+            voiceContainer.appendChild(channelDiv);
+        });
+    }
+
+    function renderOnlineMembers(data) {
+        const container = document.getElementById('onlineMembersList');
+        
+        if (!data || !data.members || data.members.length === 0) {
+            container.innerHTML = '<div class="empty-state">❌ Виджет не включён или сервер приватный<br><br>Включите: Настройки сервера → Виджет</div>';
+            document.getElementById('onlineCount').innerText = '0';
+            return;
+        }
+        
+        const onlineMembers = data.members.filter(m => 
+            m.status === 'online' || m.status === 'idle' || m.status === 'dnd'
+        );
+        
+        document.getElementById('onlineCount').innerText = onlineMembers.length;
+        
+        if (onlineMembers.length === 0) {
+            container.innerHTML = '<div class="empty-state">😴 Сейчас нет участников в сети</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        onlineMembers.forEach(member => {
+            const memberDiv = document.createElement('div');
+            memberDiv.className = 'online-member';
+            
+            const avatarUrl = getAvatarUrl(member);
+            const firstLetter = (member.username || '?').charAt(0).toUpperCase();
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'member-avatar';
+            if (avatarUrl) {
+                const img = document.createElement('img');
+                img.src = avatarUrl;
+                img.alt = member.username;
+                avatarDiv.appendChild(img);
+            } else {
+                avatarDiv.innerText = firstLetter;
+            }
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'member-info';
+            infoDiv.innerHTML = `
+                <div class="member-name">${escapeHtml(member.username)}</div>
+                <div class="member-status">
+                    <span class="status-dot ${getStatusClass(member.status)}"></span>
+                    <span>${getStatusText(member.status)}</span>
+                </div>
+            `;
+            
+            memberDiv.appendChild(avatarDiv);
+            memberDiv.appendChild(infoDiv);
+            memberDiv.addEventListener('click', () => showModal(member));
+            container.appendChild(memberDiv);
+        });
+    }
+
+    function showModal(member) {
+        const modal = document.getElementById('memberModal');
+        const modalAvatar = document.getElementById('modalAvatar');
+        const modalName = document.getElementById('modalName');
+        const modalStatus = document.getElementById('modalStatus');
+        
+        modalName.innerText = member.username;
+        
+        modalAvatar.innerHTML = '';
+        const avatarUrl = getAvatarUrl(member);
+        if (avatarUrl) {
+            const img = document.createElement('img');
+            img.src = avatarUrl;
+            img.alt = member.username;
+            modalAvatar.appendChild(img);
+        } else {
+            modalAvatar.innerText = (member.username || '?').charAt(0).toUpperCase();
+        }
+        
+        modalStatus.innerHTML = `
+            <span class="status-dot ${getStatusClass(member.status)}" style="width: 10px; height: 10px;"></span>
+            <span>${getStatusText(member.status)}</span>
+        `;
+        
+        modal.style.display = 'flex';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    async function refresh() {
+        const data = await fetchWidgetData();
+        renderOnlineMembers(data);
+        renderVoiceChannels(data);
+        
+        // Если в данных есть ссылка-приглашение — обновляем кнопку
+        if (data && data.instant_invite) {
+            const joinLink = document.getElementById('joinLink');
+            joinLink.href = data.instant_invite;
+        }
+    }
+
+    // Установка ссылки приглашения из переменной (запасной вариант)
+    const joinLink = document.getElementById('joinLink');
+    if (INVITE_LINK && INVITE_LINK !== 'https://discord.gg/kAcZTWrzKa') {
+        joinLink.href = INVITE_LINK;
+    }
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+        document.getElementById('memberModal').style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('memberModal');
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+    refresh();
+    setInterval(refresh, 600);
+</script>
+</body>
+</html>
